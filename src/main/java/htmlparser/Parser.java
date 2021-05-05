@@ -1,34 +1,33 @@
 package htmlparser;
 
+import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
 import java.io.IOException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.ArrayList;
 
 public class Parser {
-    public Document doc;
+    private Document doc;
+    private Connection con;
+    private static ArrayList<String> visitedSites;
 
-    public void getPage(String url) throws IOException {
-        doc = Jsoup.connect("https://en.wikipedia.org/wiki/Elon_Musk")
-                .userAgent("Chrome/4.0.249.0 Safari/532.5")
-                .referrer("http://www.google.com")
-                .get();
+    public void setDocument(String url){
+        try {
+            con = Jsoup.connect(url);
+
+            if(con.response().statusCode() == 200){
+                visitedSites.add(url);
+                doc = con.get();
+            }
+        } catch (IOException e) {
+            System.out.println("wrong link");
+        }
 
     }
 
-    public int findByTerm(String term) {
-        String page= doc.body().text();
-        Pattern pattern = Pattern.compile(term);
-        Matcher matcher = pattern.matcher(page);
-
-        int count = 0;
-        while (matcher.find())
-            count++;
-
-        return count;
+    public Document getDoc() {
+        return doc;
     }
+
 }
